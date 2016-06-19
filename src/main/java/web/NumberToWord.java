@@ -1,6 +1,7 @@
 package web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // TODO: Add class documentation
@@ -48,9 +49,10 @@ class NumberToWord {
                 String tempString = constructionWord.get(replacement);
                 if(!tempString.equals("0")) constructionWord.set(
                         replacement,
-                        NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString)] +
-                                " " +
-                                NUMBERCONSTANTS.PREDECIMAL[0]
+                        NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString)]
+                                + " "
+                                + NUMBERCONSTANTS.PREDECIMAL[0]
+                                + " AND "
                 );
 
                 replacement += 1;
@@ -84,8 +86,27 @@ class NumberToWord {
                 // Else, we must deal with these pesky teenagers and pre-teens
                 else {
                     // Rewind time back to checking for normal numbers
-                    int tempReplacement = replacement - 2;
+                    int tempReplacement = replacement - 1;
 
+                    // Dirty integer constructor
+                    int teenInteger = Integer.parseInt(
+                            constructionWord.get(tempReplacement)
+                                    + constructionWord.get(tempReplacement + 1)
+                    );
+
+                    // If a teen number, construct 'teen'
+                    if (teenInteger >= 10) {
+                        constructionWord.set(tempReplacement, NUMBERCONSTANTS.TEENS[teenInteger - 10]);
+                        constructionWord.set(tempReplacement + 1, "");
+                    }
+                    // Else, construct small number
+                    else if (teenInteger > 0){
+                        constructionWord.set(tempReplacement, "");
+                        constructionWord.set(tempReplacement, NUMBERCONSTANTS.NUMBERS[teenInteger]);
+                    } else {
+                        constructionWord.set(tempReplacement, "");
+                        constructionWord.set(tempReplacement + 1, "");
+                    }
                 }
             }
 
@@ -101,20 +122,30 @@ class NumberToWord {
         if (size - (size - decimalIndex) >= placement) {
             int replacement = decimalIndex - placement;
             String tempString = constructionWord.get(replacement);
-            if(!tempString.equals("0")) constructionWord.set(
-                    replacement,
-                    tempString +
-                            " " +
-                            NUMBERCONSTANTS.PREDECIMAL[preDecimalKey]
-            );
+            String tempString1 = constructionWord.get(replacement - 1);
+
+            List<String> teenAsList = Arrays.asList(NUMBERCONSTANTS.TEENS);
+
+            boolean shouldCheck = ( !tempString.contains("0") && !tempString.isEmpty() ) || teenAsList.contains(tempString1);
+
+            if ( shouldCheck ) {
+                constructionWord.set(
+                        replacement,
+                        tempString
+                                + " "
+                                + NUMBERCONSTANTS.PREDECIMAL[preDecimalKey]
+                                + ","
+                );
+            }
         }
+
         return false;
     }
 
     private int replaceDecimal(int decimalIndex) {
         if (constructionWord.contains(".")) {
             decimalIndex = constructionWord.indexOf(".");
-            constructionWord.set(decimalIndex, "and");
+            constructionWord.set(decimalIndex, "AND");
             return decimalIndex;
         } else {
             decimalIndex = constructionWord.size();
