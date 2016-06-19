@@ -21,28 +21,30 @@ class NumberToWord {
         constructionWord = new ArrayList<String>();
     }
 
-    public String toString() {
+    String niceString() throws NumberToWordException {
         int decimalIndex = 0;
         int size;
 
-        for (int i = 0; i < userInput.length(); i++) {
-            constructionWord.add(Character.toString(userInput.charAt(i)));
-        }
+        // Setup the constructionWord list
+        constructionWord.clear();
+        userInputToList();
 
         // Replace decimal with and, if possible
-        if (constructionWord.contains(".")) {
-            decimalIndex = constructionWord.indexOf(".");
-            constructionWord.set(decimalIndex, "and");
-        } else {
-            decimalIndex = constructionWord.size();
-        }
+        decimalIndex = replaceDecimal(decimalIndex);
 
         size = constructionWord.size();
 
         if (size - (size - decimalIndex) >= 3) {
             for(int i = decimalIndex - 3; i >= 0; i -= 3){
+                // We hit a bad place, break out!
                 if(i < 0) break;
+
+                // Replacement counting flag
                 int replacement = i;
+                // Flag for numbers that are not 'normal'
+                boolean teenFlag = true;
+
+                // Did we hit a 'hundred' number? Let's replace it.
                 String tempString = constructionWord.get(replacement);
                 if(!tempString.equals("0")) constructionWord.set(
                         replacement,
@@ -51,9 +53,9 @@ class NumberToWord {
                                 NUMBERCONSTANTS.PREDECIMAL[0]
                 );
 
-                boolean teenFlag = true;
-
                 replacement += 1;
+
+                // Did we hit a 'normal' number? Let's the 'tens' column
                 String tempString0 = constructionWord.get(replacement);
                 if(!tempString0.equals("0") && !tempString0.equals("1")) {
                     constructionWord.set(
@@ -64,18 +66,31 @@ class NumberToWord {
                 }
                 replacement += 1;
 
+                // Did we hit a normal number? Let's replace the 'ones' column
                 if(!teenFlag){
                     String tempString1 = constructionWord.get(replacement);
-                    if(!tempString1.equals("0")) constructionWord.set(
+                    if(!tempString1.equals("0"))
+                        constructionWord.set(
                             replacement,
                             NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString1)]
-                    );
+                        );
+                    else
+                        constructionWord.set(
+                                replacement,
+                                ""
+                        );
+
+                }
+                // Else, we must deal with these pesky teenagers and pre-teens
+                else {
+                    // Rewind time back to checking for normal numbers
+                    int tempReplacement = replacement - 2;
+
                 }
             }
 
-            for (int i = 1, j = 4; i < NUMBERCONSTANTS.PREDECIMAL.length; i++, j += 3) {
+            for (int i = 1, j = 4; i < NUMBERCONSTANTS.PREDECIMAL.length; i++, j += 3)
                 editPreDecimal(size, decimalIndex, j, i);
-            }
 
         }
 
@@ -94,6 +109,28 @@ class NumberToWord {
             );
         }
         return false;
+    }
+
+    private int replaceDecimal(int decimalIndex) {
+        if (constructionWord.contains(".")) {
+            decimalIndex = constructionWord.indexOf(".");
+            constructionWord.set(decimalIndex, "and");
+            return decimalIndex;
+        } else {
+            decimalIndex = constructionWord.size();
+            return decimalIndex;
+        }
+    }
+
+    private boolean userInputToList() throws NumberToWordException {
+        if (constructionWord.isEmpty()) {
+            for (int i = 0; i < userInput.length(); i++) {
+                constructionWord.add(Character.toString(userInput.charAt(i)));
+            }
+            return true;
+        } else {
+            throw new NumberToWordException("Never convert userInput to the constructionWord WITHOUT clearing first!");
+        }
     }
 
     private String constructString(String solution) {

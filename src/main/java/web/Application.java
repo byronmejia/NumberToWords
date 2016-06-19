@@ -19,7 +19,7 @@ public class Application {
     private static String numberToWord(String x){
         try{
             NumberToWord number = new NumberToWord(x);
-            return statusNumberJSON("0", number.toString());
+            return statusNumberJSON("0", number.niceString());
         } catch (NumberFormatException e){
             String status = "NumberFormatException: " + e.getMessage().replace("\"", "\\\"");
             return statusNumberJSON(status, "Nil");
