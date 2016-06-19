@@ -1,10 +1,14 @@
 package web;
 
 /**
- * Created by byron on 16/06/2016.
+ * This class consists of only constants, that return important strings necessary for mapping integers to
+ * words.
+ *
+ * @author Byron Mejia
+ * @version 1.0
  */
-public class NUMBERCONSTANTS {
-    public static final String[] NUMBERS = {
+class NUMBERCONSTANTS {
+    static final String[] NUMBERS = {
             "ZERO",
             "ONE",
             "TWO",
@@ -17,7 +21,7 @@ public class NUMBERCONSTANTS {
             "NINE"
     };
 
-    public static final String[] TEENS = {
+    static final String[] TEENS = {
             "TEN",
             "ELEVEN",
             "TWELVE",
@@ -30,7 +34,7 @@ public class NUMBERCONSTANTS {
             "NINETEEN"
     };
 
-    public static final String [] TENS = {
+    static final String [] TENS = {
             "TEN",
             "TWENTY",
             "THIRTY",
@@ -42,14 +46,14 @@ public class NUMBERCONSTANTS {
             "NINETY",
     };
 
-    public static final String[] PREDECIMAL = {
+    static final String[] PREDECIMAL = {
             "HUNDRED",
             "THOUSAND",
             "MILLION",
             "BILLION"
     };
 
-    public static final int[] PREDECIMAL_INT = {
+    static final int[] PREDECIMAL_INT = {
             100,
             1000,
             1000000,
