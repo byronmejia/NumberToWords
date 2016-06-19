@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Numbers to Words</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-control" content="public">
+
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/header.min.css">
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/grid.min.css">
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/form.min.css">
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/button.min.css">
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/container.min.css">
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/segment.min.css">
+
+    <script type="text/javascript" src="/js/_promise.js"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
+</head>
+
+<body>
+<br>
+<div class="ui raised very padded text container">
+    <h2 class="ui header">Number to Words</h2>
+
+    <form class="ui form">
+
+        <div class="field">
+            <label>Number to Convert</label>
+            <input id="numberField" name="number" type="text">
+        </div>
+
+        <div class="inline field">
+            <div class="ui checkbox">
+                <input id="autoLoadChecker" type="checkbox" name="checkbox" onclick="autoReloadCheck();">
+                <label>Auto Load?</label>
+            </div>
+        </div>
+
+        <div id="calcButton" class="ui submit button">Submit</div>
+    </form>
+    <br>
+    <div id="errorField"></div>
+    <div id="solutionField"></div>
+</div>
+</body>
+</html>
