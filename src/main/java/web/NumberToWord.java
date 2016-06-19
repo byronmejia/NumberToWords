@@ -73,8 +73,10 @@ class NumberToWord {
                 }
             }
 
-            editPreDecimal(size, decimalIndex, 4, 1);
-            editPreDecimal(size, decimalIndex, 7, 2);
+            for (int i = 1, j = 4; i < NUMBERCONSTANTS.PREDECIMAL.length; i++, j += 3) {
+                editPreDecimal(size, decimalIndex, j, i);
+            }
+
         }
 
         return constructString("");

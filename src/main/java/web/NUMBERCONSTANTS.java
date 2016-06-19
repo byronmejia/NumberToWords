@@ -46,11 +46,30 @@ class NUMBERCONSTANTS {
             "NINETY",
     };
 
+    // Try me, I dare you to
     static final String[] PREDECIMAL = {
             "HUNDRED",
             "THOUSAND",
             "MILLION",
-            "BILLION"
+            "BILLION",
+            "TRILLION",
+            "QUADRILLION",
+            "QUINTILLION",
+            "SEXTILLION",
+            "SEPTILLION",
+            "OCTILLION",
+            "NONILLION",
+            "DECILLION",
+            "UNDECILLION",
+            "DUODECALLION",
+            "TREDECILLION",
+            "QUATTUORDECILLION",
+            "QUINDECILLION",
+            "SEXDECILLION",
+            "SEPTENDECILLION",
+            "OCTODECILLION",
+            "NOVEMDECILLION",
+            "VIGINTILLION"
     };
 
     static final int[] PREDECIMAL_INT = {
