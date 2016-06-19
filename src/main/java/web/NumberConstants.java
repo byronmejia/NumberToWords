@@ -3,7 +3,7 @@ package web;
 /**
  * Created by byron on 16/06/2016.
  */
-public class NumberConstants {
+public class NUMBERCONSTANTS {
     public static final String[] NUMBERS = {
             "ZERO",
             "ONE",
@@ -18,6 +18,7 @@ public class NumberConstants {
     };
 
     public static final String[] TEENS = {
+            "TEN",
             "ELEVEN",
             "TWELVE",
             "THIRTEEN",
@@ -48,7 +49,7 @@ public class NumberConstants {
             "BILLION"
     };
 
-    public static final long[] PREDECIMAL_LONG = {
+    public static final int[] PREDECIMAL_INT = {
             100,
             1000,
             1000000,
