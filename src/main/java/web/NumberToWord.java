@@ -24,11 +24,58 @@ public class NumberToWord {
     }
 
     public String toString() {
+        int decimalIndex = 0;
+        int size;
+
         for (int i = 0; i < userInput.length(); i++) {
             constructionWord.add(Character.toString(userInput.charAt(i)));
         }
 
-        if (constructionWord.contains(".")) constructionWord.set(constructionWord.indexOf("."), "and");
+        // Replace decimal with and, if possible
+        if (constructionWord.contains(".")) {
+            decimalIndex = constructionWord.indexOf(".");
+            constructionWord.set(decimalIndex, "and");
+        } else {
+            decimalIndex = constructionWord.size();
+        }
+
+        size = constructionWord.size();
+
+        if (size - (size - decimalIndex) >= 3) {
+            for(int i = decimalIndex - 3; i >= 0; i -= 3){
+                if(i < 0) break;
+                int replacement = i;
+                String tempString = constructionWord.get(replacement);
+                if(!tempString.equals("0")) constructionWord.set(
+                        replacement,
+                        NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString)] +
+                                " " +
+                                NUMBERCONSTANTS.PREDECIMAL[0]
+                );
+
+                boolean teenFlag = true;
+
+                replacement += 1;
+                String tempString0 = constructionWord.get(replacement);
+                if(!tempString0.equals("0") && !tempString0.equals("1")) {
+                    constructionWord.set(
+                            replacement,
+                            NUMBERCONSTANTS.TENS[Integer.parseInt(tempString0) - 1]
+                    );
+                    teenFlag = false;
+                }
+                replacement += 1;
+
+                if(!teenFlag){
+                    String tempString1 = constructionWord.get(replacement);
+                    if(!tempString0.equals("0")) constructionWord.set(
+                            replacement,
+                            NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString1)]
+                    );
+                }
+
+            }
+        }
 
         return constructString("");
     }
