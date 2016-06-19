@@ -3,10 +3,8 @@ package web;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by byron on 16/06/2016.
- */
-public class NumberToWord {
+// TODO: Add class documentation
+class NumberToWord {
     private double number;
     private double numberTemp;
     private String userInput;
@@ -68,16 +66,32 @@ public class NumberToWord {
 
                 if(!teenFlag){
                     String tempString1 = constructionWord.get(replacement);
-                    if(!tempString0.equals("0")) constructionWord.set(
+                    if(!tempString1.equals("0")) constructionWord.set(
                             replacement,
                             NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString1)]
                     );
                 }
-
             }
+
+            editPreDecimal(size, decimalIndex, 4, 1);
+            editPreDecimal(size, decimalIndex, 7, 2);
         }
 
         return constructString("");
+    }
+
+    private boolean editPreDecimal(int size, int decimalIndex, int placement, int preDecimalKey) {
+        if (size - (size - decimalIndex) >= placement) {
+            int replacement = decimalIndex - placement;
+            String tempString = constructionWord.get(replacement);
+            if(!tempString.equals("0")) constructionWord.set(
+                    replacement,
+                    tempString +
+                            " " +
+                            NUMBERCONSTANTS.PREDECIMAL[preDecimalKey]
+            );
+        }
+        return false;
     }
 
     private String constructString(String solution) {
