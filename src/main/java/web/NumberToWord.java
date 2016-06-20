@@ -55,59 +55,33 @@ class NumberToWord {
                                 + " AND "
                 );
 
+                String tempString5;
+
                 replacement += 1;
-
-                // Did we hit a 'normal' number? Let's the 'tens' column
-                String tempString0 = constructionWord.get(replacement);
-                if(!tempString0.equals("0") && !tempString0.equals("1")) {
-                    constructionWord.set(
-                            replacement,
-                            NUMBERCONSTANTS.TENS[Integer.parseInt(tempString0) - 1]
-                    );
-                    teenFlag = false;
+                int digit = Integer.parseInt(constructionWord.get(replacement) + constructionWord.get(replacement + 1));
+                String tempString4;
+                String tempString1;
+                if (digit < 1) {
+                    tempString4 = "";
+                    tempString1 = "";
+                    tempString5 = constructionWord.get(replacement - 1).replace(" AND ", "");
+                    constructionWord.set(replacement - 1, tempString5);
+                } else if (digit < 10) {
+                    tempString4 = "";
+                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit];
+                } else if (digit < 20) {
+                    tempString4 = "";
+                    tempString1 = NUMBERCONSTANTS.TEENS[digit - 10];
+                } else {
+                    tempString4 = NUMBERCONSTANTS.TENS[digit/10 - 1];
+                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit - (digit/10 * 10)];
                 }
-                replacement += 1;
-
-                // Did we hit a normal number? Let's replace the 'ones' column
-                if(!teenFlag){
-                    String tempString1 = constructionWord.get(replacement);
-                    if(!tempString1.equals("0"))
-                        constructionWord.set(
-                            replacement,
-                            NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString1)]
-                        );
-                    else
-                        constructionWord.set(
-                                replacement,
-                                ""
-                        );
-
+                constructionWord.set(replacement, tempString4);
+                constructionWord.set(replacement + 1, " " + tempString1);
+                if(constructionWord.get(replacement + 1).equals("ZERO")){
+                    constructionWord.set(replacement + 1, "");
                 }
-                // Else, we must deal with these pesky teenagers and pre-teens
-                else {
-                    // Rewind time back to checking for normal numbers
-                    int tempReplacement = replacement - 1;
 
-                    // Dirty integer constructor
-                    int teenInteger = Integer.parseInt(
-                            constructionWord.get(tempReplacement)
-                                    + constructionWord.get(tempReplacement + 1)
-                    );
-
-                    // If a teen number, construct 'teen'
-                    if (teenInteger >= 10) {
-                        constructionWord.set(tempReplacement, NUMBERCONSTANTS.TEENS[teenInteger - 10]);
-                        constructionWord.set(tempReplacement + 1, "");
-                    }
-                    // Else, construct small number
-                    else if (teenInteger > 0){
-                        constructionWord.set(tempReplacement, "");
-                        constructionWord.set(tempReplacement, NUMBERCONSTANTS.NUMBERS[teenInteger]);
-                    } else {
-                        constructionWord.set(tempReplacement, "");
-                        constructionWord.set(tempReplacement + 1, "");
-                    }
-                }
             }
 
             solveEdgeCase(size - (size - decimalIndex));
@@ -166,9 +140,13 @@ class NumberToWord {
                     remainder = decimalSize % 3;
                 }
 
-                System.out.println("Converting post decimal ");
-                for (int i = postindex; i < majorSize; i += 3) {
+                for (int i = postindex, j = 2; i < majorSize; i += 3, j++) {
                     if (i >= majorSize) break;
+                    int majorDigits = Integer.parseInt(
+                            constructionWord.get(i)
+                            + constructionWord.get(i + 1)
+                            + constructionWord.get(i + 2)
+                    );
 
                     if (constructionWord.get(i).equals("0")) {
                         constructionWord.set(i, "");
@@ -186,7 +164,6 @@ class NumberToWord {
                                     + constructionWord.get(i + 2)
                     );
 
-                    System.out.println(digit);
                     if (digit == 0) {
                         constructionWord.set(i + 1, "");
                         constructionWord.set(i + 2, "");
@@ -203,9 +180,49 @@ class NumberToWord {
                             constructionWord.set(i + 2, "");
                         }
                     }
-
                 }
+
+                // Trim excess zeros, if the user dared do so
+                for (int i = constructionWord.size() - 1; i > decimalIndex; i-=3){
+                    if(constructionWord.get(i).isEmpty()
+                            && constructionWord.get(i - 1).isEmpty()
+                            && constructionWord.get(i - 2).isEmpty()){
+                        constructionWord.remove(i);
+                        constructionWord.remove(i - 1);
+                        constructionWord. remove(i - 2);
+                    } else {
+                        break;
+                    }
+                }
+
+                // Now work in reverse to add the special places
+                for (int i = constructionWord.size() - 1, j = 0; i > decimalIndex; i -= 3, j++) {
+                    if(!constructionWord.get(i).isEmpty()
+                            || !constructionWord.get(i - 1).isEmpty()
+                            || !constructionWord.get(i - 2).isEmpty()){
+                            if(j != 0){
+                                String temp = constructionWord.get(i);
+                                constructionWord.set(i, temp + " " + NUMBERCONSTANTS.PREDECIMAL[j]);
+                            }
+                    }
+                }
+
+                // Lastly, figure out if it's correct in saying "AND"
+                if(!constructionWord.get(constructionWord.size() - 1).isEmpty()
+                        || !constructionWord.get(constructionWord.size() - 2).isEmpty()){
+                    String tempString = constructionWord.get(constructionWord.size() - 2);
+                    constructionWord.set(constructionWord.size() - 2, " AND " + tempString);
+                }
+
+
+                // Finally, add the major place
+                int decimalPlaces = constructionWord.size() - decimalIndex - 1;
+                int fitsIn = decimalPlaces / 3;
+                String temp = constructionWord.get(constructionWord.size() - 1);
+                constructionWord.set(constructionWord.size() - 1, temp + " " + NUMBERCONSTANTS.POSTDECIMAL[fitsIn]);
+
             }
+
         }
 
         if (postsize == 0) {
@@ -248,7 +265,7 @@ class NumberToWord {
     private int replaceDecimal(int decimalIndex) {
         if (constructionWord.contains(".")) {
             decimalIndex = constructionWord.indexOf(".");
-            constructionWord.set(decimalIndex, "AND");
+            constructionWord.set(decimalIndex, "POINT");
             return decimalIndex;
         } else {
             decimalIndex = constructionWord.size();
