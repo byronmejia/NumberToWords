@@ -110,8 +110,11 @@ class NumberToWord {
                 }
             }
 
-            for (int i = 1, j = 4; i < NUMBERCONSTANTS.PREDECIMAL.length; i++, j += 3)
+            solveEdgeCase(size - (size - decimalIndex));
+
+            for (int i = 1, j = 4; i < NUMBERCONSTANTS.PREDECIMAL.length; i++, j += 3){
                 editPreDecimal(size, decimalIndex, j, i);
+            }
 
         }
 
@@ -121,8 +124,21 @@ class NumberToWord {
     private boolean editPreDecimal(int size, int decimalIndex, int placement, int preDecimalKey) {
         if (size - (size - decimalIndex) >= placement) {
             int replacement = decimalIndex - placement;
+            System.out.println(replacement);
+
             String tempString = constructionWord.get(replacement);
-            String tempString1 = constructionWord.get(replacement - 1);
+            String tempString1;
+
+
+
+            System.out.println("Enter Predecimal Phase");
+
+
+            if ((replacement - 1) < 0) {
+                tempString1 = "";
+            } else {
+                tempString1 = constructionWord.get(replacement - 1);
+            }
 
             List<String> teenAsList = Arrays.asList(NUMBERCONSTANTS.TEENS);
 
@@ -138,7 +154,7 @@ class NumberToWord {
                 );
             }
         }
-
+        System.out.println("Successful PreDecimal Exit");
         return false;
     }
 
@@ -151,6 +167,46 @@ class NumberToWord {
             decimalIndex = constructionWord.size();
             return decimalIndex;
         }
+    }
+
+    private boolean solveEdgeCase(int size) throws NumberToWordException {
+        int remainder = size % 3;
+        switch(remainder){
+            case 0:
+                return false;
+            case 1:
+                // Do something
+                int digit = Integer.parseInt(constructionWord.get(0));
+                if (digit <= 0) {
+                    constructionWord.set(0, "");
+                    return false;
+                }
+                String temp = NUMBERCONSTANTS.NUMBERS[digit];
+                constructionWord.set(0, temp);
+
+                return true;
+            case 2:
+                int digit0 = Integer.parseInt(constructionWord.get(0) + constructionWord.get(1));
+
+                if (digit0 <= 0) {
+                    constructionWord.set(0, "");
+                    constructionWord.set(1, "");
+                } else if (digit0 <= 9) {
+                    constructionWord.set(0, "");
+                    constructionWord.set(1, NUMBERCONSTANTS.NUMBERS[digit0]);
+                } else if (digit0 <= 19) {
+                    constructionWord.set(0, "");
+                    constructionWord.set(1, NUMBERCONSTANTS.TEENS[digit0 - 10]);
+                } else {
+                    int tens = digit0 / 10;
+                    int number = digit0 - (tens * 10);
+                    constructionWord.set(0, NUMBERCONSTANTS.TENS[tens - 1]);
+                    constructionWord.set(1, NUMBERCONSTANTS.NUMBERS[number]);
+                }
+
+                return true;
+        }
+        throw new NumberToWordException("Reached Impossible Code: solveEdgeCase remainder should never be more than 2");
     }
 
     private boolean userInputToList() throws NumberToWordException {
