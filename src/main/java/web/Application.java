@@ -31,7 +31,7 @@ public class Application {
 
     public static void main(String[] args) {
         // Port to run on
-        port(9292);
+        port(getHerokuAssignedPort());
 
         // Static files location
         staticFiles.location("/public");
@@ -41,4 +41,13 @@ public class Application {
         get("/api/number/", (request, response) -> numberToWord(request.params(null)));
         get("/api/number/*", (request, response) -> numberToWord(request.splat()[0]));
     }
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 9292; //return default port if heroku-port isn't set (i.e. on localhost)
+    }
+
+
 }
