@@ -5,7 +5,7 @@
 package web;
 import static spark.Spark.*;
 
-public class Main {
+public class Application {
     private static String statusNumberJSON(String status, String number){
         String jsonReturn = "{ " +
                 "\"Status\": \"#{status}\"," +
