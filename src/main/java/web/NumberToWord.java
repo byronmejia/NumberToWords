@@ -116,6 +116,100 @@ class NumberToWord {
                 editPreDecimal(size, decimalIndex, j, i);
             }
 
+        } else {
+            solveEdgeCase(size - (size - decimalIndex));
+        }
+
+        // Now, solve post decimal numbers
+        int postsize = size - decimalIndex - 1;
+        int postindex = decimalIndex + 1;
+        // If we have decimal places, work on them
+        if (postsize > 0) {
+            if (postsize == 1) {
+                int digit = Integer.parseInt(constructionWord.get(postindex));
+                String temp = NUMBERCONSTANTS.NUMBERS[digit];
+                constructionWord.set(postindex, temp + " " + NUMBERCONSTANTS.POSTDECIMAL[0]);
+            }
+
+            if (postsize == 2) {
+                int digit = Integer.parseInt(constructionWord.get(postindex) + constructionWord.get(postindex + 1));
+                String tempString;
+                String tempString1;
+                if (digit < 1) {
+                    tempString = "";
+                    tempString1 = "";
+                } else if (digit < 10) {
+                    tempString = "";
+                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit];
+                } else if (digit < 20) {
+                    tempString = "";
+                    tempString1 = NUMBERCONSTANTS.TEENS[digit - 10];
+                } else {
+                    tempString = NUMBERCONSTANTS.TENS[digit/10 - 1];
+                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit - (digit/10 * 10)];
+                }
+                constructionWord.set(postindex, tempString);
+                constructionWord.set(postindex + 1, " " + tempString1 + " " + NUMBERCONSTANTS.POSTDECIMAL[1]);
+                if(constructionWord.get(postindex + 1).equals("ZERO")){
+                    constructionWord.set(postindex + 1, "");
+                }
+            }
+
+            if (postsize > 2) {
+                int majorSize = constructionWord.size();
+                int decimalSize = majorSize - decimalIndex - 1;
+                int remainder = decimalSize % 3;
+                while(remainder != 0) {
+                    constructionWord.add("0");
+                    majorSize = constructionWord.size();
+                    decimalSize = majorSize - decimalIndex - 1;
+                    remainder = decimalSize % 3;
+                }
+
+                System.out.println("Converting post decimal ");
+                for (int i = postindex; i < majorSize; i += 3) {
+                    if (i >= majorSize) break;
+
+                    if (constructionWord.get(i).equals("0")) {
+                        constructionWord.set(i, "");
+                    } else {
+                        String temp = constructionWord.get(i);
+                        constructionWord.set(
+                                i,
+                                NUMBERCONSTANTS.NUMBERS[Integer.parseInt(temp)]
+                                + " " + NUMBERCONSTANTS.PREDECIMAL[0]
+                                );
+                    }
+
+                    int digit = Integer.parseInt(
+                            constructionWord.get(i + 1)
+                                    + constructionWord.get(i + 2)
+                    );
+
+                    System.out.println(digit);
+                    if (digit == 0) {
+                        constructionWord.set(i + 1, "");
+                        constructionWord.set(i + 2, "");
+                    } else if (digit < 10) {
+                        constructionWord.set(i + 1, "");
+                        constructionWord.set(i + 2, NUMBERCONSTANTS.NUMBERS[digit]);
+                    } else if (digit < 20) {
+                        constructionWord.set(i + 1, "");
+                        constructionWord.set(i + 2, NUMBERCONSTANTS.TEENS[digit - 10]);
+                    } else {
+                        constructionWord.set(i + 1, NUMBERCONSTANTS.TENS[digit / 10 - 1]);
+                        constructionWord.set(i + 2, NUMBERCONSTANTS.NUMBERS[digit - (digit/10 * 10)]);
+                        if(constructionWord.get(i + 2).equals("ZERO")){
+                            constructionWord.set(i + 2, "");
+                        }
+                    }
+
+                }
+            }
+        }
+
+        if (postsize == 0) {
+            constructionWord.set(decimalIndex, "");
         }
 
         return constructString("");
@@ -195,6 +289,9 @@ class NumberToWord {
                     int number = digit0 - (tens * 10);
                     constructionWord.set(0, NUMBERCONSTANTS.TENS[tens - 1]);
                     constructionWord.set(1, NUMBERCONSTANTS.NUMBERS[number]);
+                    if(constructionWord.get(1).equals("ZERO")){
+                        constructionWord.set(1, "");
+                    }
                 }
 
                 return true;
