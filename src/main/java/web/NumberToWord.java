@@ -124,15 +124,9 @@ class NumberToWord {
     private boolean editPreDecimal(int size, int decimalIndex, int placement, int preDecimalKey) {
         if (size - (size - decimalIndex) >= placement) {
             int replacement = decimalIndex - placement;
-            System.out.println(replacement);
 
             String tempString = constructionWord.get(replacement);
             String tempString1;
-
-
-
-            System.out.println("Enter Predecimal Phase");
-
 
             if ((replacement - 1) < 0) {
                 tempString1 = "";
@@ -154,7 +148,6 @@ class NumberToWord {
                 );
             }
         }
-        System.out.println("Successful PreDecimal Exit");
         return false;
     }
 
