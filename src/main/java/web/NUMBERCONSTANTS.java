@@ -72,6 +72,19 @@ class NUMBERCONSTANTS {
             "VIGINTILLION"
     };
 
+    static final String[] POSTDECIMAL = {
+            "TENTH",
+            "HUNDREDTH",
+            "THOUSANDTH",
+            "MILLIONTH",
+            "BILLIONTH",
+            "TRILLIONTH",
+            "QUADRILLIONTH",
+            "QUINTILLIONTH",
+            "SEXTILLIONTH",
+            "SEPTILLIONTH"
+    };
+
     static final int[] PREDECIMAL_INT = {
             100,
             1000,
