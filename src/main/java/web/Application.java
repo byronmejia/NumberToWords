@@ -37,7 +37,7 @@ public class Application {
         get("/api/number/", (request, response) -> numberToWord(request.params(null)));
         get("/api/number/*", (request, response) -> numberToWord(request.splat()[0]));
     }
-    static int getHerokuAssignedPort() {
+    private static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {
             return Integer.parseInt(processBuilder.environment().get("PORT"));
