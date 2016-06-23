@@ -172,7 +172,7 @@ class NumberToWord {
         StringBuilder builder = new StringBuilder();
         int size = preDecimalBuffer.size();
         for (int i = 0; i < size; i ++){
-            if(i != size - 2 && i != 0) {
+            if(i != size - 2 && i != 0 && !preDecimalBuffer.get(i).contains("HUNDRED")) {
                 builder.append(" AND ");
             }
 
