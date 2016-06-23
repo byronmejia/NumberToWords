@@ -2,338 +2,244 @@ package web;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 // TODO: Add class documentation
 class NumberToWord {
-    private double number;
     private double numberTemp;
     private String userInput;
+    private String preDecimal;
+    private String postDecimal;
+    private int decimalIndex;
+    private int userInputSize;
+    private int preDecimalSize;
+    private int postDecimalSize;
     private List<String> constructionWord;
 
     NumberToWord(String word) throws NumberToWordException {
-        // Number cannot be null
-        if (word == null) throw new NumberToWordException("Number cannot be null");
-        // Use built in double parse library
-        this.number = Double.parseDouble(word);
-        // Save a copy of original string
-        this.userInput = word;
+        stringTester(word);
+        wordSaver(word);
+        subStringSaver(word);
+        subStringTester();
+
         // Instantiate a string array list
         constructionWord = new ArrayList<String>();
     }
 
-    String niceString() throws NumberToWordException {
-        int decimalIndex = 0;
-        int size;
+    private boolean stringTester(String word) throws NumberToWordException {
+        // Throw error if being used too early
+        if (this.constructionWord != null) throw new NumberToWordException("Cannot be used outside of creation");
 
-        // Setup the constructionWord list
-        constructionWord.clear();
-        userInputToList();
+        // Number cannot be null
+        if (word == null) throw new NumberToWordException("Number cannot be null");
 
-        // Replace decimal with and, if possible
-        decimalIndex = replaceDecimal(decimalIndex);
+        // Number cannot include 'f' (mistaken for hex?)
+        if (word.contains("f")) throw new NumberToWordException("Number cannot contain 'f'");
 
-        size = constructionWord.size();
+        // Use built in double parse library, and throw errors
+        double doubleTest = Double.parseDouble(word);
 
-        if (size - (size - decimalIndex) >= 3) {
-            for(int i = decimalIndex - 3; i >= 0; i -= 3){
-                // We hit a bad place, break out!
-                if(i < 0) break;
-
-                // Replacement counting flag
-                int replacement = i;
-                // Flag for numbers that are not 'normal'
-                boolean teenFlag = true;
-
-                // Did we hit a 'hundred' number? Let's replace it.
-                String tempString = constructionWord.get(replacement);
-                if(!tempString.equals("0")) constructionWord.set(
-                        replacement,
-                        NUMBERCONSTANTS.NUMBERS[Integer.parseInt(tempString)]
-                                + " "
-                                + NUMBERCONSTANTS.PREDECIMAL[0]
-                                + " AND "
-                );
-
-                String tempString5;
-
-                replacement += 1;
-                int digit = Integer.parseInt(constructionWord.get(replacement) + constructionWord.get(replacement + 1));
-                String tempString4;
-                String tempString1;
-                if (digit < 1) {
-                    tempString4 = "";
-                    tempString1 = "";
-                    tempString5 = constructionWord.get(replacement - 1).replace(" AND ", "");
-                    constructionWord.set(replacement - 1, tempString5);
-                } else if (digit < 10) {
-                    tempString4 = "";
-                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit];
-                } else if (digit < 20) {
-                    tempString4 = "";
-                    tempString1 = NUMBERCONSTANTS.TEENS[digit - 10];
-                } else {
-                    tempString4 = NUMBERCONSTANTS.TENS[digit/10 - 1];
-                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit - (digit/10 * 10)];
-                }
-                constructionWord.set(replacement, tempString4);
-                constructionWord.set(replacement + 1, " " + tempString1);
-                if(constructionWord.get(replacement + 1).equals("ZERO")){
-                    constructionWord.set(replacement + 1, "");
-                }
-
-            }
-
-            solveEdgeCase(size - (size - decimalIndex));
-
-            for (int i = 1, j = 4; i < NUMBERCONSTANTS.PREDECIMAL.length; i++, j += 3){
-                editPreDecimal(size, decimalIndex, j, i);
-            }
-
-        } else {
-            solveEdgeCase(size - (size - decimalIndex));
-        }
-
-        // Now, solve post decimal numbers
-        int postsize = size - decimalIndex - 1;
-        int postindex = decimalIndex + 1;
-        // If we have decimal places, work on them
-        if (postsize > 0) {
-            if (postsize == 1) {
-                int digit = Integer.parseInt(constructionWord.get(postindex));
-                String temp = NUMBERCONSTANTS.NUMBERS[digit];
-                constructionWord.set(postindex, temp + " " + NUMBERCONSTANTS.POSTDECIMAL[0]);
-            }
-
-            if (postsize == 2) {
-                int digit = Integer.parseInt(constructionWord.get(postindex) + constructionWord.get(postindex + 1));
-                String tempString;
-                String tempString1;
-                if (digit < 1) {
-                    tempString = "";
-                    tempString1 = "";
-                } else if (digit < 10) {
-                    tempString = "";
-                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit];
-                } else if (digit < 20) {
-                    tempString = "";
-                    tempString1 = NUMBERCONSTANTS.TEENS[digit - 10];
-                } else {
-                    tempString = NUMBERCONSTANTS.TENS[digit/10 - 1];
-                    tempString1 = NUMBERCONSTANTS.NUMBERS[digit - (digit/10 * 10)];
-                }
-                constructionWord.set(postindex, tempString);
-                constructionWord.set(postindex + 1, " " + tempString1 + " " + NUMBERCONSTANTS.POSTDECIMAL[1]);
-                if(constructionWord.get(postindex + 1).equals("ZERO")){
-                    constructionWord.set(postindex + 1, "");
-                }
-            }
-
-            if (postsize > 2) {
-                int majorSize = constructionWord.size();
-                int decimalSize = majorSize - decimalIndex - 1;
-                int remainder = decimalSize % 3;
-                while(remainder != 0) {
-                    constructionWord.add("0");
-                    majorSize = constructionWord.size();
-                    decimalSize = majorSize - decimalIndex - 1;
-                    remainder = decimalSize % 3;
-                }
-
-                for (int i = postindex, j = 2; i < majorSize; i += 3, j++) {
-                    if (i >= majorSize) break;
-                    int majorDigits = Integer.parseInt(
-                            constructionWord.get(i)
-                            + constructionWord.get(i + 1)
-                            + constructionWord.get(i + 2)
-                    );
-
-                    if (constructionWord.get(i).equals("0")) {
-                        constructionWord.set(i, "");
-                    } else {
-                        String temp = constructionWord.get(i);
-                        constructionWord.set(
-                                i,
-                                NUMBERCONSTANTS.NUMBERS[Integer.parseInt(temp)]
-                                + " " + NUMBERCONSTANTS.PREDECIMAL[0]
-                                );
-                    }
-
-                    int digit = Integer.parseInt(
-                            constructionWord.get(i + 1)
-                                    + constructionWord.get(i + 2)
-                    );
-
-                    if (digit == 0) {
-                        constructionWord.set(i + 1, "");
-                        constructionWord.set(i + 2, "");
-                    } else if (digit < 10) {
-                        constructionWord.set(i + 1, "");
-                        constructionWord.set(i + 2, NUMBERCONSTANTS.NUMBERS[digit]);
-                    } else if (digit < 20) {
-                        constructionWord.set(i + 1, "");
-                        constructionWord.set(i + 2, NUMBERCONSTANTS.TEENS[digit - 10]);
-                    } else {
-                        constructionWord.set(i + 1, NUMBERCONSTANTS.TENS[digit / 10 - 1]);
-                        constructionWord.set(i + 2, NUMBERCONSTANTS.NUMBERS[digit - (digit/10 * 10)]);
-                        if(constructionWord.get(i + 2).equals("ZERO")){
-                            constructionWord.set(i + 2, "");
-                        }
-                    }
-                }
-
-                // Trim excess zeros, if the user dared do so
-                for (int i = constructionWord.size() - 1; i > decimalIndex; i-=3){
-                    if(constructionWord.get(i).isEmpty()
-                            && constructionWord.get(i - 1).isEmpty()
-                            && constructionWord.get(i - 2).isEmpty()){
-                        constructionWord.remove(i);
-                        constructionWord.remove(i - 1);
-                        constructionWord. remove(i - 2);
-                    } else {
-                        break;
-                    }
-                }
-
-                // Now work in reverse to add the special places
-                for (int i = constructionWord.size() - 1, j = 0; i > decimalIndex; i -= 3, j++) {
-                    if(!constructionWord.get(i).isEmpty()
-                            || !constructionWord.get(i - 1).isEmpty()
-                            || !constructionWord.get(i - 2).isEmpty()){
-                            if(j != 0){
-                                String temp = constructionWord.get(i);
-                                constructionWord.set(i, temp + " " + NUMBERCONSTANTS.PREDECIMAL[j]);
-                            }
-                    }
-                }
-
-                // Lastly, figure out if it's correct in saying "AND"
-                if(!constructionWord.get(constructionWord.size() - 1).isEmpty()
-                        || !constructionWord.get(constructionWord.size() - 2).isEmpty()){
-                    String tempString = constructionWord.get(constructionWord.size() - 2);
-                    constructionWord.set(constructionWord.size() - 2, " AND " + tempString);
-                }
-
-
-                // Finally, add the major place
-                int decimalPlaces = constructionWord.size() - decimalIndex - 1;
-                int fitsIn = decimalPlaces / 3;
-                String temp = constructionWord.get(constructionWord.size() - 1);
-                constructionWord.set(constructionWord.size() - 1, temp + " " + NUMBERCONSTANTS.POSTDECIMAL[fitsIn]);
-
-            }
-
-        }
-
-        if (postsize == 0) {
-            constructionWord.set(decimalIndex, "");
-        }
-
-        return constructString("");
+        return true;
     }
 
-    private boolean editPreDecimal(int size, int decimalIndex, int placement, int preDecimalKey) {
-        if (size - (size - decimalIndex) >= placement) {
-            int replacement = decimalIndex - placement;
+    private boolean wordSaver(String word) throws NumberToWordException {
+        // Throw error if being used too early
+        if (this.constructionWord != null) throw new NumberToWordException("Cannot be used outside of creation");
 
-            String tempString = constructionWord.get(replacement);
-            String tempString1;
+        // Save a copy of the word size
+        this.userInputSize = word.length();
 
-            if ((replacement - 1) < 0) {
-                tempString1 = "";
-            } else {
-                tempString1 = constructionWord.get(replacement - 1);
-            }
+        // Save a copy of original string
+        this.userInput = word;
 
-            List<String> teenAsList = Arrays.asList(NUMBERCONSTANTS.TEENS);
+        // Save location of decimal place
+        if (word.contains(".")) this.decimalIndex = word.indexOf('.');
+        else this.decimalIndex = -1;
 
-            boolean shouldCheck = ( !tempString.contains("0") && !tempString.isEmpty() ) || teenAsList.contains(tempString1);
-
-            if ( shouldCheck ) {
-                constructionWord.set(
-                        replacement,
-                        tempString
-                                + " "
-                                + NUMBERCONSTANTS.PREDECIMAL[preDecimalKey]
-                                + ","
-                );
-            }
-        }
-        return false;
+        return true;
     }
 
-    private int replaceDecimal(int decimalIndex) {
-        if (constructionWord.contains(".")) {
-            decimalIndex = constructionWord.indexOf(".");
-            constructionWord.set(decimalIndex, "POINT");
-            return decimalIndex;
-        } else {
-            decimalIndex = constructionWord.size();
-            return decimalIndex;
-        }
-    }
+    private boolean subStringSaver(String word) throws NumberToWordException {
+        // Throws error if being used too early
+        if (this.constructionWord != null) throw new NumberToWordException("Cannot be used outside of creation");
+        if (this.userInput == null) throw new NumberToWordException("Cannot place subStringSaver before wordSaver");
 
-    private boolean solveEdgeCase(int size) throws NumberToWordException {
-        int remainder = size % 3;
-        switch(remainder){
+        // Save a copy of preDecimal string
+        // && Save a copy of postDecimal string
+        switch (this.decimalIndex) {
+            case -1:
+                this.preDecimal = divisibleByThreePreSpacer(word);
+                this.postDecimal = null;
+                break;
             case 0:
-                return false;
-            case 1:
-                // Do something
-                int digit = Integer.parseInt(constructionWord.get(0));
-                if (digit <= 0) {
-                    constructionWord.set(0, "");
-                    return false;
-                }
-                String temp = NUMBERCONSTANTS.NUMBERS[digit];
-                constructionWord.set(0, temp);
-
-                return true;
-            case 2:
-                int digit0 = Integer.parseInt(constructionWord.get(0) + constructionWord.get(1));
-
-                if (digit0 <= 0) {
-                    constructionWord.set(0, "");
-                    constructionWord.set(1, "");
-                } else if (digit0 <= 9) {
-                    constructionWord.set(0, "");
-                    constructionWord.set(1, NUMBERCONSTANTS.NUMBERS[digit0]);
-                } else if (digit0 <= 19) {
-                    constructionWord.set(0, "");
-                    constructionWord.set(1, NUMBERCONSTANTS.TEENS[digit0 - 10]);
-                } else {
-                    int tens = digit0 / 10;
-                    int number = digit0 - (tens * 10);
-                    constructionWord.set(0, NUMBERCONSTANTS.TENS[tens - 1]);
-                    constructionWord.set(1, NUMBERCONSTANTS.NUMBERS[number]);
-                    if(constructionWord.get(1).equals("ZERO")){
-                        constructionWord.set(1, "");
-                    }
-                }
-
-                return true;
+                this.preDecimal = null;
+                this.postDecimal = divisibleByThreePostSpacer(
+                        cleanPostZeros(
+                                word.substring(1)
+                        )
+                );
+                break;
+            default:
+                this.preDecimal = divisibleByThreePreSpacer(word.substring(0, decimalIndex));
+                if (this.userInputSize == decimalIndex + 1) this.postDecimal = null;
+                else this.postDecimal = divisibleByThreePostSpacer(
+                        cleanPostZeros(
+                                word.substring(decimalIndex + 1)
+                        )
+                );
+                break;
         }
-        throw new NumberToWordException("Reached Impossible Code: solveEdgeCase remainder should never be more than 2");
+
+        // Save a copy of preDecimal substring lengths
+        if (this.preDecimal != null) this.preDecimalSize = this.preDecimal.length();
+        else this.preDecimalSize = -1;
+
+        // Save a copy of postDecimal substring lengths
+        if (this.postDecimal != null) this.postDecimalSize = this.postDecimal.length();
+        else this.postDecimalSize = -1;
+
+        return true;
     }
 
-    private boolean userInputToList() throws NumberToWordException {
-        if (constructionWord.isEmpty()) {
-            for (int i = 0; i < userInput.length(); i++) {
-                constructionWord.add(Character.toString(userInput.charAt(i)));
+    private boolean subStringTester() throws NumberToWordException {
+        if (this.preDecimal != null)
+            if(this.preDecimal.length() > 66) throw new NumberToWordException("PreDecimal exceeds VIGINTILLION " +
+                    "(66 significant figures before decimal)");
+
+        if (this.postDecimal != null)
+            if(this.postDecimal.length() > 27) throw new NumberToWordException("PostDecimal exceeds SEPTILLIONTH " +
+                    "(27 significant figures after decimal)");
+
+        return true;
+    }
+
+
+    private String divisibleByThreePreSpacer(String word) {
+        int remainder = word.length() % 3;
+        if (remainder > 0) return divisibleByThreePreSpacer("0" + word);
+        return word;
+    }
+
+    private String divisibleByThreePostSpacer(String word) {
+        int remainder = word.length() % 3;
+        if (remainder > 0) return divisibleByThreePostSpacer(word + "0");
+        return word;
+    }
+
+    private String cleanPostZeros(String word) {
+        if(word.endsWith("0")) return cleanPostZeros(word.substring(0, word.length()-2));
+        return word;
+    }
+
+    /* ----------------------------------- END Constructor helper methods ----------------------------------- */
+
+    String niceString() throws NumberToWordException {
+        // Generate Pre-Decimal Numbers
+        List<String> preDecimalBuffer = new ArrayList<String>();
+        String preDecimalString;
+        for(int i = 0; i < this.preDecimalSize; i += 3) {
+            constructionWord.add(threeDigitParse(i, this.preDecimal));
+            preDecimalBuffer.add(threeDigitParse(i, this.preDecimal));
+        }
+        preDecimalBuffer = suffixify(preDecimalBuffer);
+        preDecimalString = textify(preDecimalBuffer);
+
+        // Generate Post-Decimal Numbers
+        List<String> postDecimalBuffer = new ArrayList<String>();
+        String postDecimalString;
+        if (postDecimalSize == 3) {
+            postDecimalString = postDecimalEdge(this.postDecimal);
+        } else {
+            for(int i = 0; i < this.postDecimalSize; i += 3) {
+                constructionWord.add(threeDigitParse(i, this.postDecimal));
+                postDecimalBuffer.add(threeDigitParse(i, this.postDecimal));
             }
-            return true;
+            postDecimalBuffer = suffixify(postDecimalBuffer);
+            postDecimalString = textify(postDecimalBuffer) + " " + NUMBERCONSTANTS.POSTDECIMAL[postDecimalSize/3 + 1];
+        }
+
+        if (this.decimalIndex == -1) {
+            return preDecimalString;
         } else {
-            throw new NumberToWordException("Never convert userInput to the constructionWord WITHOUT clearing first!");
+            return (preDecimalString + " POINT " + postDecimalString).trim();
         }
     }
 
-    private String constructString(String solution) {
-        String tempString = this.constructionWord.get(0);
-        this.constructionWord.remove(0);
-        if (constructionWord.isEmpty()){
-            return solution + tempString;
+    private String postDecimalEdge(String postDecimal) throws NumberToWordException {
+        if (postDecimal.charAt(1) == '0') {
+            return NUMBERCONSTANTS.NUMBERS[
+                    Character.getNumericValue(postDecimal.charAt(0))
+                    ] + " " + NUMBERCONSTANTS.POSTDECIMAL[0];
+        } else if (postDecimal.charAt(2) == '0') {
+            return twoDigitParseInt(
+                    Integer.parseInt(postDecimal.substring(0, 2))
+            ) + " " + NUMBERCONSTANTS.POSTDECIMAL[1];
         } else {
-            return constructString(solution + tempString + " ");
+            return threeDigitParse(0, postDecimal) + " " + NUMBERCONSTANTS.POSTDECIMAL[2];
+        }
+    }
+
+    private String textify(List<String> preDecimalBuffer) {
+        StringBuilder builder = new StringBuilder();
+
+        Iterator<String> itemIterator = preDecimalBuffer.iterator();
+        if (itemIterator.hasNext()) {
+            builder.append(itemIterator.next());
+            while (itemIterator.hasNext()) {
+                builder.append(", ");
+                builder.append(itemIterator.next());
+            }
+        }
+
+        return builder.toString();
+    }
+
+    private List<String> suffixify(List<String> preDecimalBuffer) {
+        for(int i = preDecimalBuffer.size() - 1, j = 0; i >= 0; i--, j++){
+            String temp = preDecimalBuffer.get(i);
+            if(temp != "ZERO"){
+                if(j != 0) preDecimalBuffer.set(i, temp + " " + NUMBERCONSTANTS.PREDECIMAL[j]);
+            } else {
+                preDecimalBuffer.remove(i);
+            }
+        }
+
+        return preDecimalBuffer;
+    }
+
+    private String threeDigitParse(int index, String string) throws NumberToWordException {
+        int number = Integer.parseInt(string.substring(index, index + 3));
+        if(number > 99) {
+            String temp0 = NUMBERCONSTANTS.NUMBERS[number/100]
+                    + " "
+                    + NUMBERCONSTANTS.PREDECIMAL[0];
+            String temp1 = twoDigitParseInt(number - (number/100 * 100));
+
+            if(temp1.equals("ZERO")){
+                return temp0;
+            } else {
+                return temp0 + " AND " + temp1;
+            }
+        } else {
+            return twoDigitParseInt(number);
+        }
+    }
+
+    private String twoDigitParseInt(int number) {
+        if (number < 10) {
+            return NUMBERCONSTANTS.NUMBERS[number];
+        } else if (number < 20) {
+            return NUMBERCONSTANTS.TEENS[number - 10];
+        } else {
+            String tempFirst = NUMBERCONSTANTS.TENS[number / 10 - 1];
+            String tempSecond = NUMBERCONSTANTS.NUMBERS[number - (number/10 * 10)];
+
+            if(tempSecond.equals("ZERO")){
+                return tempFirst;
+            } else {
+                return tempFirst + "-" + tempSecond;
+            }
         }
     }
 }

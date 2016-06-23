@@ -84,11 +84,4 @@ class NUMBERCONSTANTS {
             "SEXTILLIONTH",
             "SEPTILLIONTH"
     };
-
-    static final int[] PREDECIMAL_INT = {
-            100,
-            1000,
-            1000000,
-            1000000000
-    };
 }
