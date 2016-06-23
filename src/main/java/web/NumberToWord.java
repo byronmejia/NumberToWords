@@ -7,7 +7,6 @@ import java.util.List;
 
 // TODO: Add class documentation
 class NumberToWord {
-    private double numberTemp;
     private String userInput;
     private String preDecimal;
     private String postDecimal;
@@ -15,22 +14,15 @@ class NumberToWord {
     private int userInputSize;
     private int preDecimalSize;
     private int postDecimalSize;
-    private List<String> constructionWord;
 
     NumberToWord(String word) throws NumberToWordException {
         stringTester(word);
         wordSaver(word);
         subStringSaver(word);
         subStringTester();
-
-        // Instantiate a string array list
-        constructionWord = new ArrayList<String>();
     }
 
     private boolean stringTester(String word) throws NumberToWordException {
-        // Throw error if being used too early
-        if (this.constructionWord != null) throw new NumberToWordException("Cannot be used outside of creation");
-
         // Number cannot be null
         if (word == null) throw new NumberToWordException("Number cannot be null");
 
@@ -44,9 +36,6 @@ class NumberToWord {
     }
 
     private boolean wordSaver(String word) throws NumberToWordException {
-        // Throw error if being used too early
-        if (this.constructionWord != null) throw new NumberToWordException("Cannot be used outside of creation");
-
         // Save a copy of the word size
         this.userInputSize = word.length();
 
@@ -62,7 +51,6 @@ class NumberToWord {
 
     private boolean subStringSaver(String word) throws NumberToWordException {
         // Throws error if being used too early
-        if (this.constructionWord != null) throw new NumberToWordException("Cannot be used outside of creation");
         if (this.userInput == null) throw new NumberToWordException("Cannot place subStringSaver before wordSaver");
 
         // Save a copy of preDecimal string
@@ -128,18 +116,17 @@ class NumberToWord {
     }
 
     private String cleanPostZeros(String word) {
-        if(word.endsWith("0")) return cleanPostZeros(word.substring(0, word.length()-2));
+        if(word.endsWith("0")) return cleanPostZeros(word.substring(0, word.length()-1));
         return word;
     }
 
-    /* ----------------------------------- END Constructor helper methods ----------------------------------- */
+/* ----------------------------------------- END Constructor helper methods ----------------------------------------- */
 
     String niceString() throws NumberToWordException {
         // Generate Pre-Decimal Numbers
         List<String> preDecimalBuffer = new ArrayList<String>();
         String preDecimalString;
         for(int i = 0; i < this.preDecimalSize; i += 3) {
-            constructionWord.add(threeDigitParse(i, this.preDecimal));
             preDecimalBuffer.add(threeDigitParse(i, this.preDecimal));
         }
         preDecimalBuffer = suffixify(preDecimalBuffer);
@@ -147,19 +134,20 @@ class NumberToWord {
 
         // Generate Post-Decimal Numbers
         List<String> postDecimalBuffer = new ArrayList<String>();
-        String postDecimalString;
-        if (postDecimalSize == 3) {
-            postDecimalString = postDecimalEdge(this.postDecimal);
-        } else {
-            for(int i = 0; i < this.postDecimalSize; i += 3) {
-                constructionWord.add(threeDigitParse(i, this.postDecimal));
-                postDecimalBuffer.add(threeDigitParse(i, this.postDecimal));
+        String postDecimalString = "";
+        if(this.decimalIndex != -1 && this.decimalIndex != this.userInputSize - 1){
+            if (this.postDecimalSize <= 3) {
+                postDecimalString = postDecimalEdge(this.postDecimal);
+            } else {
+                for(int i = 0; i < this.postDecimalSize; i += 3) {
+                    postDecimalBuffer.add(threeDigitParse(i, this.postDecimal));
+                }
+                postDecimalBuffer = suffixify(postDecimalBuffer);
+                postDecimalString = textify(postDecimalBuffer) + " " + NUMBERCONSTANTS.POSTDECIMAL[postDecimalSize/3 + 1];
             }
-            postDecimalBuffer = suffixify(postDecimalBuffer);
-            postDecimalString = textify(postDecimalBuffer) + " " + NUMBERCONSTANTS.POSTDECIMAL[postDecimalSize/3 + 1];
         }
 
-        if (this.decimalIndex == -1) {
+        if (this.decimalIndex == -1 || this.decimalIndex == this.userInputSize - 1) {
             return preDecimalString;
         } else {
             return (preDecimalString + " POINT " + postDecimalString).trim();
@@ -182,13 +170,16 @@ class NumberToWord {
 
     private String textify(List<String> preDecimalBuffer) {
         StringBuilder builder = new StringBuilder();
+        int size = preDecimalBuffer.size();
+        for (int i = 0; i < size; i ++){
+            if(i != size - 2 && i != 0) {
+                builder.append(" AND ");
+            }
 
-        Iterator<String> itemIterator = preDecimalBuffer.iterator();
-        if (itemIterator.hasNext()) {
-            builder.append(itemIterator.next());
-            while (itemIterator.hasNext()) {
+            builder.append(preDecimalBuffer.get(i));
+
+            if(i != size - 1) {
                 builder.append(", ");
-                builder.append(itemIterator.next());
             }
         }
 
