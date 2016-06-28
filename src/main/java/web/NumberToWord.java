@@ -14,6 +14,7 @@ class NumberToWord {
     private int userInputSize;
     private int preDecimalSize;
     private int postDecimalSize;
+    private boolean negative = false;
 
     NumberToWord(String word) throws NumberToWordException {
         stringTester(word);
@@ -26,12 +27,14 @@ class NumberToWord {
         // Number cannot be null
         if (word == null) throw new NumberToWordException("Number cannot be null");
 
-        // Number cannot include 'f' (mistaken for hex?)
-        if (word.contains("f")) throw new NumberToWordException("Number cannot contain hexadecimal values " +
-                "(assuming decimal notation)");
+        // Check if we are dealing with a negative
 
         // Use built in double parse library, and throw errors
         double doubleTest = Double.parseDouble(word);
+
+        // Number cannot include 'f' (mistaken for hex?)
+        if (word.contains("f")) throw new NumberToWordException("Number cannot contain hexadecimal values " +
+                "(assuming decimal notation)");
 
         return true;
     }
