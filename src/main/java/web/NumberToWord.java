@@ -21,13 +21,14 @@ class NumberToWord {
         subStringSaver(word);
         subStringTester();
     }
-
+/* --------------------------------------- END Constructor --------------------------------------------------------- */
     private boolean stringTester(String word) throws NumberToWordException {
         // Number cannot be null
         if (word == null) throw new NumberToWordException("Number cannot be null");
 
         // Number cannot include 'f' (mistaken for hex?)
-        if (word.contains("f")) throw new NumberToWordException("Number cannot contain hexadecimal values");
+        if (word.contains("f")) throw new NumberToWordException("Number cannot contain hexadecimal values " +
+                "(assuming decimal notation)");
 
         // Use built in double parse library, and throw errors
         double doubleTest = Double.parseDouble(word);
@@ -123,6 +124,9 @@ class NumberToWord {
 /* ----------------------------------------- END Constructor helper methods ----------------------------------------- */
 
     String niceString() throws NumberToWordException {
+        if (Double.parseDouble(this.userInput) == 0) {
+            return "ZERO";
+        }
         // Generate Pre-Decimal Numbers
         List<String> preDecimalBuffer = new ArrayList<String>();
         String preDecimalString;
