@@ -20,6 +20,7 @@ function autoUpdate(){
 
     var numberField = document.getElementById('numberField');
     var errorField = document.getElementById('errorField');
+    var errorMessage = document.getElementById('errorMessage');
     var solutionField = document.getElementById('solutionField');
 
     console.log(numberField.value);
@@ -32,10 +33,12 @@ function autoUpdate(){
             var apiObject = JSON.parse(data);
             console.log(apiObject);
             if(apiObject.Status != 0){
-                errorField.innerText = apiObject.Status;
+                errorField.style.display = '';
+                errorMessage.innerText = apiObject.Status;
                 solutionField.innerText = '';
             } else {
-                errorField.innerText = '';
+                errorMessage.innerText = '';
+                errorField.style.display = 'none';
                 solutionField.innerText = apiObject.Number;
             }
         })
@@ -46,6 +49,7 @@ function autoUpdate(){
 
 window.onload = function() {
     document.getElementById('numberField').addEventListener("keyup", autoUpdate);
+    document.getElementById('errorField').style.display = 'none';
 };
 
 /**

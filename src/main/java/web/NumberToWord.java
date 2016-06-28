@@ -27,7 +27,7 @@ class NumberToWord {
         if (word == null) throw new NumberToWordException("Number cannot be null");
 
         // Number cannot include 'f' (mistaken for hex?)
-        if (word.contains("f")) throw new NumberToWordException("Number cannot contain 'f'");
+        if (word.contains("f")) throw new NumberToWordException("Number cannot contain hexadecimal values");
 
         // Use built in double parse library, and throw errors
         double doubleTest = Double.parseDouble(word);

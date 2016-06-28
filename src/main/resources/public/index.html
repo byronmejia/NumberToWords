@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" href="/semantic_ui/components/button.min.css">
     <link rel="stylesheet" type="text/css" href="/semantic_ui/components/container.min.css">
     <link rel="stylesheet" type="text/css" href="/semantic_ui/components/segment.min.css">
+    <link rel="stylesheet" type="text/css" href="/semantic_ui/components/message.min.css">
 
     <script type="text/javascript" src="/js/_promise.js"></script>
     <script type="text/javascript" src="/js/app.js"></script>
@@ -20,28 +21,24 @@
 <body>
 <br>
 <div class="ui raised very padded text container">
-    <h2 class="ui header">Number to Words</h2>
-
-    <form class="ui form">
-
+    <h2 class="ui header">Number to Words Converter</h2>
+    <p>Number to word converter can take in any positive, negative, and decimal numbers that are within the current</p>
+    <div class="ui form">
         <div class="field">
             <label>Number to Convert</label>
             <input id="numberField" name="number" type="text">
         </div>
-        <!-- This section is for when JS is not loaded -->
-        <!--
-        <div class="inline field">
-            <div class="ui checkbox">
-                <input id="autoLoadChecker" type="checkbox" name="checkbox" onclick="autoReloadCheck();">
-                <label>Auto Load?</label>
-            </div>
-        </div>
-        -->
-
-        <!-- <div id="calcButton" class="ui submit button">Submit</div> -->
-    </form>
+    </div>
     <br>
-    <div id="errorField"></div>
+    <div id="errorField">
+        <div class="ui negative message">
+            <i class="close icon"></i>
+            <div class="header">
+                Error Encountered!
+            </div>
+            <p><div id="errorMessage"></div>
+            </p></div>
+    </div>
     <div id="solutionField"></div>
 </div>
 </body>
