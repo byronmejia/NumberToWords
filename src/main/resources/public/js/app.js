@@ -16,14 +16,10 @@ function autoReloadCheck(){
 }
 
 function autoUpdate(){
-    console.log('Triggered');
-
     var numberField = document.getElementById('numberField');
     var errorField = document.getElementById('errorField');
     var errorMessage = document.getElementById('errorMessage');
     var solutionField = document.getElementById('solutionField');
-
-    console.log(numberField.value);
 
     var newRoute = APIRoutes.number + encodeURIComponent(numberField.value).replace('/', '%2F');
 
@@ -31,7 +27,6 @@ function autoUpdate(){
     APIReq(newRoute)
         .then(function(data){
             var apiObject = JSON.parse(data);
-            console.log(apiObject);
             if(apiObject.Status != 0){
                 errorField.style.display = '';
                 errorMessage.innerText = apiObject.Status;
