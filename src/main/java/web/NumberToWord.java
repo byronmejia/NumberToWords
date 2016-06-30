@@ -1,6 +1,8 @@
 package web;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 // TODO: Add class documentation
@@ -19,7 +21,7 @@ class NumberToWord {
         if (word == null) throw new NumberToWordException("Number cannot be null");
 
         // Check if we are dealing with a negative
-        if (word.charAt(0) == '-') {
+        if(word.charAt(0) == '-') {
             this.negative = true;
             word = word.substring(1);
         }
@@ -31,6 +33,8 @@ class NumberToWord {
 /* --------------------------------------- END Constructor --------------------------------------------------------- */
 
     private boolean stringTester(String word) throws NumberToWordException {
+        // Number cannot be null
+
         // Use built in double parse library, and throw errors
         double doubleTest = Double.parseDouble(word);
 
@@ -90,11 +94,11 @@ class NumberToWord {
 
     private boolean subStringTester() throws NumberToWordException {
         if (this.preDecimal != null)
-            if (this.preDecimal.length() > 66) throw new NumberToWordException("PreDecimal exceeds VIGINTILLION " +
+            if(this.preDecimal.length() > 66) throw new NumberToWordException("PreDecimal exceeds VIGINTILLION " +
                     "(66 significant figures before decimal)");
 
-        if (this.postDecimal != null) {
-            if (this.postDecimal.length() > 3) throw new NumberToWordException("PostDecimal exceeds Cents Limit " +
+        if (this.postDecimal != null){
+            if(this.postDecimal.length() > 3) throw new NumberToWordException("PostDecimal exceeds Cents Limit " +
                     "(2 significant figures after decimal)");
             if (this.postDecimal.charAt(0) != '0') throw new NumberToWordException("PostDecimal exceeds Cents Limit " +
                     "(2 significant figures after decimal)");
@@ -122,7 +126,7 @@ class NumberToWord {
         // Generate Pre-Decimal Numbers
         List<String> preDecimalBuffer = new ArrayList<String>();
         String preDecimalString;
-        for (int i = 0; i < this.preDecimalSize; i += 3) {
+        for(int i = 0; i < this.preDecimalSize; i += 3) {
             preDecimalBuffer.add(threeDigitParse(i, this.preDecimal));
         }
         preDecimalBuffer = suffixify(preDecimalBuffer);
@@ -131,14 +135,14 @@ class NumberToWord {
         // Should we add dollars?
         if (!preDecimalString.isEmpty()) {
             // Did we just hit ONE?
-            if (preDecimalString.equals("ONE")) preDecimalString = preDecimalString + " DOLLAR ";
+            if(preDecimalString.equals("ONE")) preDecimalString = preDecimalString + " DOLLAR ";
             else preDecimalString = preDecimalString + " DOLLARS ";
         }
 
         // Generate Post-Decimal Numbers
         List<String> postDecimalBuffer = new ArrayList<String>();
         String postDecimalString = "";
-        if (this.decimalIndex != -1 && this.decimalIndex != this.userInputSize - 1) {
+        if(this.decimalIndex != -1 && this.decimalIndex != this.userInputSize - 1){
             postDecimalBuffer.add(threeDigitParse(0, this.postDecimal));
             postDecimalBuffer = suffixify(postDecimalBuffer);
             postDecimalString = textify(postDecimalBuffer);
@@ -147,38 +151,38 @@ class NumberToWord {
         // Should we add cents?
         if (!postDecimalString.isEmpty()) {
             // Did we just hit ONE?
-            if (postDecimalString.equals("ONE")) postDecimalString = postDecimalString + " CENT ";
+            if(postDecimalString.equals("ONE")) postDecimalString = postDecimalString + " CENT ";
             else postDecimalString = postDecimalString + " CENTS ";
         }
 
         String finalString = "";
         if (this.decimalIndex == -1 || this.decimalIndex == this.userInputSize - 1) {
-            finalString = preDecimalString;
-        } else if (preDecimalString.isEmpty()) {
-            finalString = (postDecimalString).trim();
+            finalString =  preDecimalString;
+        } else if (preDecimalString.isEmpty()){
+            finalString =  (postDecimalString).trim();
         } else {
-            finalString = (preDecimalString + " AND " + postDecimalString).trim();
+            finalString =  (preDecimalString + " AND " + postDecimalString).trim();
         }
 
         // Test for if negative number, and return
         if (this.negative) {
             return ("NEGATIVE " + finalString).trim();
         } else {
-            return (finalString).trim();
+            return finalString.trim();
         }
     }
 
     private String textify(List<String> preDecimalBuffer) {
         StringBuilder builder = new StringBuilder();
         int size = preDecimalBuffer.size();
-        for (int i = 0; i < size; i++) {
-            if (i != size - 2 && i != 0 && !preDecimalBuffer.get(i).contains("HUNDRED")) {
+        for (int i = 0; i < size; i ++){
+            if(i != size - 2 && i != 0 && !preDecimalBuffer.get(i).contains("HUNDRED")) {
                 builder.append(" AND ");
             }
 
             builder.append(preDecimalBuffer.get(i));
 
-            if (i != size - 1) {
+            if(i != size - 1) {
                 builder.append(", ");
             }
         }
@@ -187,10 +191,10 @@ class NumberToWord {
     }
 
     private List<String> suffixify(List<String> preDecimalBuffer) {
-        for (int i = preDecimalBuffer.size() - 1, j = 0; i >= 0; i--, j++) {
+        for(int i = preDecimalBuffer.size() - 1, j = 0; i >= 0; i--, j++){
             String temp = preDecimalBuffer.get(i);
-            if (temp.equals("ZERO")) {
-                if (j != 0) preDecimalBuffer.set(i, temp + " " + NUMBERCONSTANTS.PREDECIMAL[j]);
+            if(temp != "ZERO"){
+                if(j != 0) preDecimalBuffer.set(i, temp + " " + NUMBERCONSTANTS.PREDECIMAL[j]);
             } else {
                 preDecimalBuffer.remove(i);
             }
@@ -201,13 +205,13 @@ class NumberToWord {
 
     private String threeDigitParse(int index, String string) throws NumberToWordException {
         int number = Integer.parseInt(string.substring(index, index + 3));
-        if (number > 99) {
-            String temp0 = NUMBERCONSTANTS.NUMBERS[number / 100]
+        if(number > 99) {
+            String temp0 = NUMBERCONSTANTS.NUMBERS[number/100]
                     + " "
                     + NUMBERCONSTANTS.PREDECIMAL[0];
-            String temp1 = twoDigitParseInt(number - (number / 100 * 100));
+            String temp1 = twoDigitParseInt(number - (number/100 * 100));
 
-            if (temp1.equals("ZERO")) {
+            if(temp1.equals("ZERO")){
                 return temp0;
             } else {
                 return temp0 + " AND " + temp1;
@@ -224,9 +228,9 @@ class NumberToWord {
             return NUMBERCONSTANTS.TEENS[number - 10];
         } else {
             String tempFirst = NUMBERCONSTANTS.TENS[number / 10 - 1];
-            String tempSecond = NUMBERCONSTANTS.NUMBERS[number - (number / 10 * 10)];
+            String tempSecond = NUMBERCONSTANTS.NUMBERS[number - (number/10 * 10)];
 
-            if (tempSecond.equals("ZERO")) {
+            if(tempSecond.equals("ZERO")){
                 return tempFirst;
             } else {
                 return tempFirst + "-" + tempSecond;

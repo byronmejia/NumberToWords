@@ -34,7 +34,7 @@ class NUMBERCONSTANTS {
             "NINETEEN"
     };
 
-    static final String[] TENS = {
+    static final String [] TENS = {
             "TEN",
             "TWENTY",
             "THIRTY",
