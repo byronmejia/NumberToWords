@@ -2,6 +2,12 @@ package web;
 import static spark.Spark.*;
 
 public class Application {
+    /**
+     *
+     * @param status status code of the number
+     * @param number word representation of a number
+     * @return JSON compliant representation of either the new number in words, or the error message
+     */
     private static String statusNumberJSON(String status, String number){
         String jsonReturn = "{ " +
                 "\"Status\": \"#{status}\"," +
@@ -12,6 +18,12 @@ public class Application {
                 .replace("#{number}", number);
     }
 
+    /**
+     * Attempts to get the word representation of a given numeric string,
+     * and then returns a JSON file.
+     * @param x the word to try to convert to a number (in word representation)
+     * @return JSON compliant messages.
+     */
     private static String numberToWord(String x){
         try{
             NumberToWord number = new NumberToWord(x);
@@ -25,6 +37,10 @@ public class Application {
         }
     }
 
+    /**
+     * Main application that sets the routes and static file location
+     * @param args additional arguments
+     */
     public static void main(String[] args) {
         // Port to run on
         port(getHerokuAssignedPort());
@@ -37,6 +53,11 @@ public class Application {
         get("/api/number/", (request, response) -> numberToWord(request.params(null)));
         get("/api/number/*", (request, response) -> numberToWord(request.splat()[0]));
     }
+
+    /**
+     * If running on Heroku, get the assigned port number from Heroku
+     * @return port to listen on
+     */
     private static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {

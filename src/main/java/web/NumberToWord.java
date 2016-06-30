@@ -3,7 +3,15 @@ package web;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Add class documentation
+/**
+ * This class specifically for converting numbers into 'words'. Uses built in java Double parser for throwing
+ * exceptions. Uses ArrayLists of Strings over a string builder, for no particularly good reason at all.
+ *
+ * @author byron
+ * @see Double
+ * @see ArrayList
+ * @see List
+ */
 class NumberToWord {
     private String userInput;
     private String preDecimal;
@@ -13,6 +21,15 @@ class NumberToWord {
     private int preDecimalSize;
     private boolean negative = false;
 
+    /**
+     * Constructor method used to test the given number for multiple conditions before saving it to the class
+     * parameters.
+     *
+     * <p>This constructor will test for negative numbers, by checking if the first char is a dash ('-')</p>
+     * @param word The given string from the user
+     * @throws NumberToWordException if word given is null (as this will result in segmentation faults).
+     *
+     */
     NumberToWord(String word) throws NumberToWordException {
         // Null Tester - Without we get stuck in process loops
         if (word == null) throw new NumberToWordException("Number cannot be null");
@@ -29,9 +46,14 @@ class NumberToWord {
     }
 /* --------------------------------------- END Constructor --------------------------------------------------------- */
 
+    /**
+     *
+     * @param word a given string to test
+     * @throws NumberFormatException if the number does not follow Double.parseDouble()
+     * @throws NumberToWordException if the number contains an 'f', which Double.parseDouble() will miss
+     * @see Double
+     */
     private void stringTester(String word) throws NumberToWordException {
-        // Number cannot be null
-
         // Use built in double parse library, and throw errors
         double doubleTest = Double.parseDouble(word);
 
@@ -41,7 +63,12 @@ class NumberToWord {
 
     }
 
-    private void wordSaver(String word) throws NumberToWordException {
+    /**
+     * Saves the given word to the class parameter, and the decimal index.
+     *
+     * @param word a given string to save
+     */
+    private void wordSaver(String word) {
         // Save a copy of the word size
         this.userInputSize = word.length();
 
@@ -54,6 +81,12 @@ class NumberToWord {
 
     }
 
+    /**
+     * This method saves the given word into substrings of Pre and Post decimal numbers.
+     *
+     * @param word the word to manipulate and save into parameters
+     * @throws NumberToWordException if attempting to save a subString before saving the userInput parameter
+     */
     private void subStringSaver(String word) throws NumberToWordException {
         // Throws error if being used too early
         if (this.userInput == null) throw new NumberToWordException("Cannot place subStringSaver before wordSaver");
@@ -82,6 +115,11 @@ class NumberToWord {
 
     }
 
+    /**
+     * Method tests to see that the subStrings are within reasonable numbers, following the Wikipedia apparent standard
+     * english standards of large and small numbers.
+     * @throws NumberToWordException if number is not within wikipedia standard english dictionary decimal numbers
+     */
     private void subStringTester() throws NumberToWordException {
         if (this.preDecimal != null)
             if (this.preDecimal.length() > 66) throw new NumberToWordException("PreDecimal exceeds VIGINTILLION " +
@@ -95,6 +133,11 @@ class NumberToWord {
         }
     }
 
+    /**
+     * Converts the given word to a word that's divisble by 3, due to how numbers are pronounced.
+     * @param word places 'zero' buffers to round the number into a group of 3 (due to nature of numbers)
+     * @return the new number in multiples of 3
+     */
     private String divisibleByThreePreSpacer(String word) {
         int remainder = word.length() % 3;
         if (remainder > 0) return divisibleByThreePreSpacer("0" + word);
@@ -108,7 +151,11 @@ class NumberToWord {
 
 /* ----------------------------------------- END Constructor helper methods ----------------------------------------- */
 
-    String niceString() throws NumberToWordException {
+    /**
+     * Generates a nice english representation of the word.
+     * @return the word representation
+     */
+    String niceString() {
         if (Double.parseDouble(this.userInput) == 0) {
             return "ZERO DOLLARS";
         }
@@ -161,6 +208,11 @@ class NumberToWord {
         }
     }
 
+    /**
+     * builds a string from the given list, appropiately placing " AND " where appropiate
+     * @param preDecimalBuffer
+     * @return the build number in words
+     */
     private String textify(List<String> preDecimalBuffer) {
         StringBuilder builder = new StringBuilder();
         int size = preDecimalBuffer.size();
@@ -179,6 +231,11 @@ class NumberToWord {
         return builder.toString();
     }
 
+    /**
+     * Adds the predecimal constants (MILLION, BILLION, -ILLION...) to the list of words where appropriate.
+     * @param preDecimalBuffer
+     * @return
+     */
     private List<String> suffixify(List<String> preDecimalBuffer) {
         for (int i = preDecimalBuffer.size() - 1, j = 0; i >= 0; i--, j++) {
             String temp = preDecimalBuffer.get(i);
@@ -192,7 +249,13 @@ class NumberToWord {
         return preDecimalBuffer;
     }
 
-    private String threeDigitParse(int index, String string) throws NumberToWordException {
+    /**
+     * Parses the digit, assuming 3 significant figures
+     * @param index the starting significant figure
+     * @param string the string to parse for a number
+     * @return a three sig figure number (up to hundreds)
+     */
+    private String threeDigitParse(int index, String string) {
         int number = Integer.parseInt(string.substring(index, index + 3));
         if (number > 99) {
             String temp0 = NUMBERCONSTANTS.NUMBERS[number / 100]
@@ -210,6 +273,12 @@ class NumberToWord {
         }
     }
 
+    /**
+     * Runs like the three digit parser, however, creates the word representation from an
+     * integer that is less than one hundred.
+     * @param number the number to parse
+     * @return the string representation of a two digit number
+     */
     private String twoDigitParseInt(int number) {
         if (number < 10) {
             return NUMBERCONSTANTS.NUMBERS[number];

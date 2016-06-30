@@ -4,6 +4,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Testing suite for ensuring words will not go through if no numbers
+ * and ensuring numbers are represented appropiately.
+ */
 public class NumberToWordTest {
 
     @Test
