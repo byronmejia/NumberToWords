@@ -1,8 +1,9 @@
 package web;
+
 import static spark.Spark.*;
 
 public class Application {
-    private static String statusNumberJSON(String status, String number){
+    private static String statusNumberJSON(String status, String number) {
         String jsonReturn = "{ " +
                 "\"Status\": \"#{status}\"," +
                 "\"Number\": \"#{number}\"" +
@@ -12,11 +13,11 @@ public class Application {
                 .replace("#{number}", number);
     }
 
-    private static String numberToWord(String x){
-        try{
+    private static String numberToWord(String x) {
+        try {
             NumberToWord number = new NumberToWord(x);
             return statusNumberJSON("0", number.niceString());
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             String status = "NumberFormatException: " + e.getMessage().replace("\"", "\\\"");
             return statusNumberJSON(status, "Nil");
         } catch (NumberToWordException e) {
@@ -37,6 +38,7 @@ public class Application {
         get("/api/number/", (request, response) -> numberToWord(request.params(null)));
         get("/api/number/*", (request, response) -> numberToWord(request.splat()[0]));
     }
+
     private static int getHerokuAssignedPort() {
         ProcessBuilder processBuilder = new ProcessBuilder();
         if (processBuilder.environment().get("PORT") != null) {

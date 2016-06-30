@@ -1,8 +1,6 @@
 package web;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 // TODO: Add class documentation
@@ -33,8 +31,6 @@ class NumberToWord {
 /* --------------------------------------- END Constructor --------------------------------------------------------- */
 
     private boolean stringTester(String word) throws NumberToWordException {
-        // Number cannot be null
-
         // Use built in double parse library, and throw errors
         double doubleTest = Double.parseDouble(word);
 

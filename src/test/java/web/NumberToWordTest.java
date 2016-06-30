@@ -23,31 +23,31 @@ public class NumberToWordTest {
         assertEquals(true, true);
     }
 
-    @Test(expected=NumberFormatException.class)
+    @Test(expected = NumberFormatException.class)
     public void constructorBadStringNoDigits() throws Exception {
         String testString = "Lemon";
         NumberToWord number = new NumberToWord(testString);
     }
 
-    @Test(expected=NumberFormatException.class)
+    @Test(expected = NumberFormatException.class)
     public void constructorBadManyDecimals() throws Exception {
         String testString = "1.1.1";
         NumberToWord number = new NumberToWord(testString);
     }
 
-    @Test(expected=NumberToWordException.class)
+    @Test(expected = NumberToWordException.class)
     public void constructorBadStringNull() throws Exception {
         String testString = null;
         NumberToWord number = new NumberToWord(testString);
     }
 
-    @Test(expected=NumberFormatException.class)
+    @Test(expected = NumberFormatException.class)
     public void constructorBadStringNumberMix() throws Exception {
         String testString = "123fmm";
         NumberToWord number = new NumberToWord(testString);
     }
 
-    @Test(expected=NumberToWordException.class)
+    @Test(expected = NumberToWordException.class)
     public void constructorBadStringNumberMix2() throws Exception {
         String testString = "123f";
         NumberToWord number = new NumberToWord(testString);
